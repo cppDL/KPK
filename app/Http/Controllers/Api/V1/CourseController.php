@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -12,7 +13,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        return response()->json(Course::where('is_active', true)->get());
+        return response()->json(Course::all());
     }
     /**
      * Store a newly created resource in storage.

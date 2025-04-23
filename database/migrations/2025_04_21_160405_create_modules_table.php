@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // In your modules migration file (e.g., `database/migrations/xxxx_create_modules_table.php`)
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('module_id')->constrained();
-            $table->string('type'); // 'quiz', 'code', 'theory'
-            $table->json('content'); // Questions/instructions
-            $table->json('solution')->nullable(); // Answer key
+            $table->foreignId('course_id')->constrained();
+            $table->string('title');  // This column is missing
+            $table->integer('xp_reward')->default(0);  // This column is missing
+            $table->timestamps();
         });
     }
 

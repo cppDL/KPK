@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\ApV1;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Course;
+use App\Models\Module;
 use Illuminate\Http\Request;
 
 class ModuleController extends Controller
@@ -12,9 +14,7 @@ class ModuleController extends Controller
      */
     public function index(Course $course)
     {
-        return response()->json([
-            'data' => $course->modules()->orderBy('order')->get()
-        ]);
+        return Module::where('course_id', $courseId)->get();
     }
 
     /**
