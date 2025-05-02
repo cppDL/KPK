@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('course_id')->constrained();
             $table->string('title');
+            $table->text('content');
             $table->integer('xp_reward')->default(10);
             $table->integer('order')->default(0);
         });
