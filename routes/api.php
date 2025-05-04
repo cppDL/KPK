@@ -47,3 +47,28 @@ Route::post('/generate-user-token', function(Request $request) {
         'user_id' => $user->id
     ]);
 });
+
+Route::post('/login', function(Request $request) {
+    // Validate the incoming request
+    $validated = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|string',
+    ]);
+
+    // Attempt to find the user by email
+    $user = User::where('email', $validated['email'])->first();
+
+    // Check if the user exists and if the password is correct
+    if (!$user || !Hash::check($validated['password'], $user->password)) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    // Generate a new token
+    $token = $user->createToken('user-token', ['view-courses'])->plainTextToken;
+
+    // Return the token and user details
+    return response()->json([
+        'token' => $token,
+        'user_id' => $user->id,
+    ]);
+});
