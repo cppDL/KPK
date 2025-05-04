@@ -14,7 +14,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/courses', [CourseController::class, 'index']);
     Route::get('/courses/{id}', [CourseController::class, 'show']);
     Route::get('/courses/{courseId}/modules', [CourseController::class, 'getCourseModules']);
+    Route::get('/modules/{moduleId}', [CourseController::class, 'showModule']);
     Route::get('/modules/{moduleId}/lessons', [CourseController::class, 'getLessons']);
+    Route::get('/lessons/{lessonId}', [CourseController::class, 'showLesson']);
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users', UserController::class);

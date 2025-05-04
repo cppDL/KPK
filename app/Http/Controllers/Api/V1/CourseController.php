@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\Module;
+use App\Models\Lesson;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource (all courses).
      */
-
     public function index(Request $request)
     {
         // Validate query parameters
@@ -38,83 +39,88 @@ class CourseController extends Controller
         return response()->json($courses);
     }
 
-
     /**
-     * Store a newly created resource in storage.
+     * Display the specified course.
      */
-    public function store(Request $request)
+    public function show($id)
     {
-        //
+        $course = Course::findOrFail($id);  // Find the course by ID or fail if not found
+        return response()->json($course);
     }
 
     /**
-     * Display the specified resource.
+     * Display the modules of a specific course.
      */
-    public function show(string $id)
+    public function getCourseModules(Request $request, $courseId)
     {
-        //
+        // Validate query parameters
+        $validator = Validator::make($request->all(), [
+            'page' => 'integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $page = $request->query('page', 1);
+        $perPage = 10;
+
+        // Cache key for the course and page
+        $cacheKey = "course_{$courseId}_modules_page_{$page}";
+
+        $course = Course::findOrFail($courseId);
+
+        $modules = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($course, $perPage) {
+            return $course->modules()->paginate($perPage);
+        });
+
+        return response()->json($modules);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Display a specific module by its ID.
      */
-    public function update(Request $request, string $id)
+    public function showModule($moduleId)
     {
-        //
+        $module = Module::findOrFail($moduleId);  // Find the module by ID or fail if not found
+        return response()->json($module);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Display the lessons of a specific module.
      */
-    public function destroy(string $id)
+    public function getLessons(Request $request, $moduleId)
     {
-        //
+        // Validate query parameters
+        $validator = Validator::make($request->all(), [
+            'page' => 'integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $page = $request->query('page', 1);
+        $perPage = 10;
+
+        // Cache key for the module and page
+        $cacheKey = "module_{$moduleId}_lessons_page_{$page}";
+
+        $module = Module::findOrFail($moduleId);
+
+        $lessons = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($module, $perPage) {
+            return $module->lessons()->paginate($perPage);
+        });
+
+        return response()->json($lessons);
+    }
+
+    /**
+     * Display a specific lesson by its ID.
+     */
+    public function showLesson($lessonId)
+    {
+        $lesson = Lesson::findOrFail($lessonId);  // Find the lesson by ID or fail if not found
+        return response()->json($lesson);
     }
 }
-
-// class CourseController extends Controller
-// {
-//     // Show all courses with pagination, eager loading, and caching
-//     public function index(Request $request)
-//     {
-//         $cacheKey = 'courses_page_' . $request->page;
-
-//         // Attempt to get cached courses, if not found, query the database
-//         $courses = Cache::remember($cacheKey, now()->addMinutes(10), function () {
-//             return Course::with(['modules.lessons']) // Eager loading modules and lessons
-//                 ->paginate(10); // Paginate the results, 10 per page
-//         });
-
-//         return response()->json($courses);
-//     }
-
-//     // Show a single course by ID with related modules and lessons
-//     public function show($id)
-//     {
-//         $course = Course::with(['modules.lessons'])->findOrFail($id);
-
-//         return response()->json($course);
-//     }
-
-//     // Show the modules for a specific course with lessons
-//     public function getModules($courseId)
-//     {
-//         $course = Course::findOrFail($courseId);
-
-//         // Get the modules for this course, with related lessons
-//         $modules = $course->modules()->with('lessons')->get();
-
-//         return response()->json($modules);
-//     }
-
-//     // Show the lessons for a specific module
-//     public function getLessons($moduleId)
-//     {
-//         $module = Module::findOrFail($moduleId);
-
-//         // Get the lessons for this module
-//         $lessons = $module->lessons()->get();
-
-//         return response()->json($lessons);
-//     }
-// }
