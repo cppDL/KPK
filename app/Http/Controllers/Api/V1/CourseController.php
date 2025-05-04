@@ -1,82 +1,120 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Controller;
 use App\Models\Course;
-use App\Models\Module;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Cache;
 
 class CourseController extends Controller
 {
-    // Cache duration in minutes
-    const CACHE_DURATION = 60;
-
     /**
-     * Get paginated courses with modules
+     * Display a listing of the resource.
      */
+
     public function index(Request $request)
     {
-        $page = $request->input('page', 1);
-        $perPage = $request->input('per_page', 10);
+        // Validate query parameters
+        $validator = Validator::make($request->all(), [
+            'page' => 'integer|min:1',
+        ]);
 
-        $cacheKey = "courses.page_{$page}.per_page_{$perPage}";
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
-        $courses = Cache::remember($cacheKey, now()->addMinutes(self::CACHE_DURATION), function() use ($perPage) {
-            return Course::with(['modules' => function($query) {
-                        $query->orderBy('order');
-                    }])
-                    ->orderBy('created_at')
-                    ->paginate($perPage);
+        $page = $request->query('page', 1);
+        $perPage = 10;
+
+        // Cache key is unique to the page number
+        $cacheKey = "courses_page_{$page}";
+
+        $courses = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($perPage) {
+            return Course::paginate($perPage);
         });
 
-        return response()->json([
-            'success' => true,
-            'data' => $courses
-        ]);
+        return response()->json($courses);
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
     }
 
     /**
-     * Get single course with paginated modules
+     * Display the specified resource.
      */
-    public function show($id, Request $request)
+    public function show(string $id)
     {
-        $perPage = $request->input('per_page', 5);
-        $cacheKey = "course.{$id}.per_page_{$perPage}";
-
-        $course = Cache::remember($cacheKey, now()->addMinutes(self::CACHE_DURATION), function() use ($id, $perPage) {
-            return Course::with(['modules' => function($query) use ($perPage) {
-                        $query->orderBy('order')
-                              ->with(['lessons', 'quizzes']);
-                    }])
-                    ->findOrFail($id);
-        });
-
-        return response()->json([
-            'success' => true,
-            'data' => $course
-        ]);
+        //
     }
 
     /**
-     * Get paginated modules for a course
+     * Update the specified resource in storage.
      */
-    public function getCourseModules($courseId, Request $request)
+    public function update(Request $request, string $id)
     {
-        $page = $request->input('page', 1);
-        $perPage = $request->input('per_page', 5);
-        $cacheKey = "course.{$courseId}.modules.page_{$page}";
+        //
+    }
 
-        $modules = Cache::remember($cacheKey, now()->addMinutes(self::CACHE_DURATION), function() use ($courseId, $perPage) {
-            return Module::where('course_id', $courseId)
-                        ->with(['lessons', 'quizzes'])
-                        ->orderBy('order')
-                        ->paginate($perPage);
-        });
-
-        return response()->json([
-            'success' => true,
-            'data' => $modules
-        ]);
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
     }
 }
+
+// class CourseController extends Controller
+// {
+//     // Show all courses with pagination, eager loading, and caching
+//     public function index(Request $request)
+//     {
+//         $cacheKey = 'courses_page_' . $request->page;
+
+//         // Attempt to get cached courses, if not found, query the database
+//         $courses = Cache::remember($cacheKey, now()->addMinutes(10), function () {
+//             return Course::with(['modules.lessons']) // Eager loading modules and lessons
+//                 ->paginate(10); // Paginate the results, 10 per page
+//         });
+
+//         return response()->json($courses);
+//     }
+
+//     // Show a single course by ID with related modules and lessons
+//     public function show($id)
+//     {
+//         $course = Course::with(['modules.lessons'])->findOrFail($id);
+
+//         return response()->json($course);
+//     }
+
+//     // Show the modules for a specific course with lessons
+//     public function getModules($courseId)
+//     {
+//         $course = Course::findOrFail($courseId);
+
+//         // Get the modules for this course, with related lessons
+//         $modules = $course->modules()->with('lessons')->get();
+
+//         return response()->json($modules);
+//     }
+
+//     // Show the lessons for a specific module
+//     public function getLessons($moduleId)
+//     {
+//         $module = Module::findOrFail($moduleId);
+
+//         // Get the lessons for this module
+//         $lessons = $module->lessons()->get();
+
+//         return response()->json($lessons);
+//     }
+// }

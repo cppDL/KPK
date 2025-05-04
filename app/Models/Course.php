@@ -18,6 +18,7 @@ class Course extends Model
     {
         return $this->hasMany(Module::class);
     }
+    
 
     // 3. Default values (optional)
     protected $attributes = [
