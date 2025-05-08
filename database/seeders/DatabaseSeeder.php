@@ -8,11 +8,13 @@ use App\Models\Module; // Add this if using modules
 
 class DatabaseSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // Call your specific seeders
         $this->call([
-            CourseSeeder::class // This will run your dedicated CourseSeeder
+            CourseSeeder::class,
+            ModuleSeeder::class,
+            LessonSeeder::class,
         ]);
     }
+
 }
