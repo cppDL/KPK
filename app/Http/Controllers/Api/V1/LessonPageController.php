@@ -30,4 +30,19 @@ class LessonPageController extends Controller
 
         return response()->json($page);
     }
+
+    public function getNextPage($lessonId, $pageNumber)
+    {
+        $nextPage = LessonPage::where('lesson_id', $lessonId)
+            ->where('page_number', '>', $pageNumber)
+            ->orderBy('page_number', 'asc')
+            ->first();
+
+        if (!$nextPage) {
+            return response()->json(['message' => 'No next page.'], 404);
+        }
+
+        return response()->json($nextPage);
+    }
+
 }
