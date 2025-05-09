@@ -17,6 +17,11 @@ Route::prefix('v1')->group(function () {
     Route::get('/modules/{moduleId}', [CourseController::class, 'showModule']);
     Route::get('/modules/{moduleId}/lessons', [CourseController::class, 'getLessons']);
     Route::get('/lessons/{lessonId}', [CourseController::class, 'showLesson']);
+    Route::get('/lessons/{lessonId}/next', [CourseController::class, 'getNextLesson']);
+    Route::get('/lessons/{lessonId}/previous', [CourseController::class, 'getPreviousLesson']);
+    Route::get('/lessons/{lessonId}/pages', [LessonPageController::class, 'index']);
+    Route::get('/lessons/{lessonId}/pages/{pageNumber}', [LessonPageController::class, 'showPage']);
+
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users', UserController::class);

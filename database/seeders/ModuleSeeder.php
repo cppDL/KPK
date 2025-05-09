@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Course;
 use App\Models\Module;
 
-class ModulesTableSeeder extends Seeder
+class ModuleSeeder extends Seeder
 {
     public function run()
     {

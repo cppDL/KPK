@@ -115,6 +115,28 @@ class CourseController extends Controller
         return response()->json($lessons);
     }
 
+public function getNextLesson($lessonId)
+    {
+        $currentLesson = Lesson::findOrFail($lessonId);
+        $nextLesson = Lesson::where('module_id', $currentLesson->module_id)
+            ->where('order', '>', $currentLesson->order)
+            ->orderBy('order', 'asc')
+            ->first();
+
+        return $nextLesson ?? response()->json(['message' => 'No next lesson.'], 404);
+    }
+
+public function getPreviousLesson($lessonId)
+    {
+        $currentLesson = Lesson::findOrFail($lessonId);
+        $prevLesson = Lesson::where('module_id', $currentLesson->module_id)
+            ->where('order', '<', $currentLesson->order)
+            ->orderBy('order', 'desc')
+            ->first();
+
+        return $prevLesson ?? response()->json(['message' => 'No previous lesson.'], 404);
+    }
+
     /**
      * Display a specific lesson by its ID.
      */

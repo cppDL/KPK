@@ -13,11 +13,17 @@ return new class extends Migration
     {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('course_id')->constrained();
+            $table->unsignedBigInteger('module_id');
             $table->string('title');
-            $table->text('content');
-            $table->integer('xp_reward')->default(10);
-            $table->integer('order')->default(0);
+            $table->text('content')->nullable(); // Content of the lesson, optional for flexibility
+            $table->integer('order')->default(0); // Useful for navigation (pagination-like flow)
+            $table->timestamps();
+
+            // Foreign key constraint
+            $table->foreign('module_id')
+                  ->references('id')
+                  ->on('modules')
+                  ->onDelete('cascade');
         });
     }
 
@@ -29,3 +35,4 @@ return new class extends Migration
         Schema::dropIfExists('lessons');
     }
 };
+

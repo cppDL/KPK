@@ -15,4 +15,9 @@ class Lesson extends Model
     {
         return $this->hasMany(UserProgress::class);
     }
+
+    public function pages()
+    {
+        return $this->hasMany(LessonPage::class)->orderBy('page_number');
+    }
 }
