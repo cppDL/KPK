@@ -14,34 +14,25 @@ class LessonSeeder extends Seeder
         $module = Module::where('title', 'Variables and Data Types')->first();
 
         if ($module) {
-            $lesson = Lesson::firstOrCreate([
+            Lesson::firstOrCreate([
                 'module_id' => $module->id,
                 'title' => 'Introduction to Variables',
-            ], [
-                'order' => 1
-            ]);
+            ], ['order' => 1]);
 
-            // Paginated content
-            LessonPage::firstOrCreate([
-                'lesson_id' => $lesson->id,
-                'page_number' => 1
-            ], [
-                'content' => 'Variables are containers for storing data values.'
-            ]);
+            Lesson::firstOrCreate([
+                'module_id' => $module->id,
+                'title' => 'Data Types',
+            ], ['order' => 2]);
 
-            LessonPage::firstOrCreate([
-                'lesson_id' => $lesson->id,
-                'page_number' => 2
-            ], [
-                'content' => 'In Python: x = 5 assigns the integer 5 to variable x.'
-            ]);
+            Lesson::firstOrCreate([
+                'module_id' => $module->id,
+                'title' => 'Variable Naming Rules',
+            ], ['order' => 3]);
 
-            LessonPage::firstOrCreate([
-                'lesson_id' => $lesson->id,
-                'page_number' => 3
-            ], [
-                'content' => 'Variables do not need to be declared with any particular type.'
-            ]);
+            Lesson::firstOrCreate([
+                'module_id' => $module->id,
+                'title' => 'Type Conversion',
+            ], ['order' => 4]);
         }
     }
 }

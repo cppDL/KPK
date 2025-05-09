@@ -13,6 +13,9 @@ class LessonPageSeeder extends Seeder
         $lessons = Lesson::all();
 
         foreach ($lessons as $lesson) {
+            if ($lesson->pages()->exists()) {
+                continue;
+            }
             LessonPage::create([
                 'lesson_id' => $lesson->id,
                 'page_number' => 1,
@@ -43,7 +46,7 @@ class LessonPageSeeder extends Seeder
             
             LessonPage::create([
                 'lesson_id' => $lesson->id,
-                'page_number' => 1,
+                'page_number' => 3,
                 'content' => <<<EOT
             To begin writing Python code, you must install the Python interpreter on your system.
             
@@ -57,7 +60,7 @@ class LessonPageSeeder extends Seeder
 
             LessonPage::create([
                 'lesson_id' => $lesson->id,
-                'page_number' => 2,
+                'page_number' => 4,
                 'content' => <<<EOT
             Next, install an Integrated Development Environment (IDE). Popular options include:
             
