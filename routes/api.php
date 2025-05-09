@@ -21,6 +21,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/lessons/{lessonId}/previous', [CourseController::class, 'getPreviousLesson']);
     Route::get('/lessons/{lessonId}/pages', [LessonPageController::class, 'index']);
     Route::get('/lessons/{lessonId}/pages/{pageNumber}', [LessonPageController::class, 'showPage']);
+    Route::get('/lessons/{lessonId}/pages/{pageNumber}/next', [LessonPageController::class, 'getNextPage']);
 
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
