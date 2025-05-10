@@ -22,7 +22,8 @@ class CourseSeeder extends Seeder
         ], [
             'title' => 'Python Basics',
             'description' => 'Intro to Python programming',
-            'is_active' => true
+            'status' => Course::STATUS_AVAILABLE
+
         ]);
     }
 }

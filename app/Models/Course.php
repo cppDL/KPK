@@ -11,7 +11,7 @@ class Course extends Model
     use HasFactory;
 
     // 1. Fillable fields (for mass assignment)
-    protected $fillable = ['title', 'slug', 'description', 'is_active'];
+    protected $fillable = ['title', 'slug', 'description', 'status'];
 
     // 2. Relationship to modules
     public function modules(): HasMany
@@ -22,9 +22,13 @@ class Course extends Model
 
     // 3. Default values (optional)
     protected $attributes = [
-        'is_active' => true
+        'status' => 'available',
     ];
 
+    const STATUS_AVAILABLE = 'available';
+    const STATUS_IN_PROGRESS = 'inprogress';
+    const STATUS_COMPLETED = 'completed';
+    
     // 4. Casts (optional)
     protected $casts = [
         'is_active' => 'boolean'

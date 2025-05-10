@@ -6,23 +6,25 @@ use App\Http\Controllers\Api\V1\LessonController;
 use App\Http\Controllers\Api\V1\LessonPageController;
 use App\Http\Controllers\Api\V1\CourseController;
 use App\Http\Controllers\Api\V1\ModuleController;
+use App\Http\Controllers\Api\V1\TestController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 Route::prefix('v1')->group(function () {
     // Public routes
-    Route::get('/courses', [CourseController::class, 'index']);
-    Route::get('/courses/{id}', [CourseController::class, 'show']);
-    Route::get('/courses/{courseId}/modules', [CourseController::class, 'getCourseModules']);
-    Route::get('/modules/{moduleId}', [CourseController::class, 'showModule']);
-    Route::get('/modules/{moduleId}/lessons', [CourseController::class, 'getLessons']);
-    Route::get('/lessons/{lessonId}', [CourseController::class, 'showLesson']);
-    Route::get('/lessons/{lessonId}/next', [CourseController::class, 'getNextLesson']);
-    Route::get('/lessons/{lessonId}/previous', [CourseController::class, 'getPreviousLesson']);
-    Route::get('/lessons/{lessonId}/pages', [LessonPageController::class, 'index']);
-    Route::get('/lessons/{lessonId}/pages/{pageNumber}', [LessonPageController::class, 'showPage']);
-    Route::get('/lessons/{lessonId}/pages/{pageNumber}/next', [LessonPageController::class, 'getNextPage']);
+    Route::get('/pcourses', [CourseController::class, 'publicIndex']);
+    // Route::get('/courses', [CourseController::class, 'index']);
+    // Route::get('/courses/{id}', [CourseController::class, 'show']);
+    // Route::get('/courses/{courseId}/modules', [CourseController::class, 'getCourseModules']);
+    // Route::get('/modules/{moduleId}', [CourseController::class, 'showModule']);
+    // Route::get('/modules/{moduleId}/lessons', [CourseController::class, 'getLessons']);
+    // Route::get('/lessons/{lessonId}', [CourseController::class, 'showLesson']);
+    // Route::get('/lessons/{lessonId}/next', [CourseController::class, 'getNextLesson']);
+    // Route::get('/lessons/{lessonId}/previous', [CourseController::class, 'getPreviousLesson']);
+    // Route::get('/lessons/{lessonId}/pages', [LessonPageController::class, 'index']);
+    // Route::get('/lessons/{lessonId}/pages/{pageNumber}', [LessonPageController::class, 'showPage']);
+    // Route::get('/lessons/{lessonId}/pages/{pageNumber}/next', [LessonPageController::class, 'getNextPage']);
 
     // Protected routes
     Route::middleware('auth:sanctum')->group(function () {
@@ -31,6 +33,19 @@ Route::prefix('v1')->group(function () {
         Route::get('user-courses', function(Request $request) {
             return $request->user()->courses; 
         });
+        Route::get('/courses', [CourseController::class, 'index']);
+        Route::get('/courses/{id}', [CourseController::class, 'show']);
+        Route::get('/courses/{courseId}/modules', [CourseController::class, 'getCourseModules']);
+        Route::get('/modules/{moduleId}', [CourseController::class, 'showModule']);
+        Route::get('/modules/{moduleId}/lessons', [CourseController::class, 'getLessons']);
+        Route::get('/lessons/{lessonId}', [CourseController::class, 'showLesson']);
+        Route::get('/lessons/{lessonId}/next', [CourseController::class, 'getNextLesson']);
+        Route::get('/lessons/{lessonId}/previous', [CourseController::class, 'getPreviousLesson']);
+        Route::get('/lessons/{lessonId}/pages', [LessonPageController::class, 'index']);
+        Route::get('/lessons/{lessonId}/pages/{pageNumber}', [LessonPageController::class, 'showPage']);
+        Route::get('/lessons/{lessonId}/pages/{pageNumber}/next', [LessonPageController::class, 'getNextPage']);
+        Route::get('/tests', [TestController::class, 'index']);
+        Route::get('/tests/{id}', [TestController::class, 'show']);
     });
 });
 
@@ -82,6 +97,10 @@ Route::post('/login', function(Request $request) {
     // Return the token and user details
     return response()->json([
         'token' => $token,
-        'user_id' => $user->id,
+        'user' => [
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+        ]
     ]);
 });

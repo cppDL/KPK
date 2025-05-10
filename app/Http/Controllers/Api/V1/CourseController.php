@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
 {
-    /**
-     * Display a listing of the resource (all courses).
-     */
+    
     public function index(Request $request)
     {
         // Validate query parameters
@@ -34,6 +32,28 @@ class CourseController extends Controller
 
         $courses = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($perPage) {
             return Course::paginate($perPage);
+        });
+
+        return response()->json($courses);
+    }
+
+    public function publicIndex(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'page' => 'integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $page = $request->query('page', 1);
+        $perPage = 10;
+
+        $cacheKey = "public_courses_page_{$page}";
+
+        $courses = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($perPage) {
+            return Course::select('id', 'title', 'description')->paginate($perPage);
         });
 
         return response()->json($courses);
