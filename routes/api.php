@@ -53,7 +53,11 @@ Route::post('/generate-user-token', function(Request $request) {
 
     return response()->json([
         'token' => $token,
-        'user_id' => $user->id
+        'user_id' => $user->id,
+        'user' => [
+            'name' => $user->name,
+            'email' => $user->email,
+        ]
     ]);
 });
 
