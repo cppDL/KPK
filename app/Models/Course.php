@@ -28,7 +28,7 @@ class Course extends Model
     const STATUS_AVAILABLE = 'available';
     const STATUS_IN_PROGRESS = 'inprogress';
     const STATUS_COMPLETED = 'completed';
-    
+
     // 4. Casts (optional)
     protected $casts = [
         'is_active' => 'boolean'
@@ -37,4 +37,10 @@ class Course extends Model
     public function customer() {
         return $this->belongsTo(Customer::class);
     }
+
+    public function tests()
+    {
+        return $this->hasMany(Test::class);
+    }
+
 }

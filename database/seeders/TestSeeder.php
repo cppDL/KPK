@@ -14,20 +14,17 @@ class TestSeeder extends Seeder
 {
     public function run()
     {
-        $course = Course::where('title', 'Python Basics')->first();
-        $module = Module::where('title', 'Variables and Data Types')->first();
-        $lesson = Lesson::where('title', 'Introduction to Variables')->first();
+        $course = Course::first();
 
-        if (!$course || !$module || !$lesson) {
-            $this->command->warn("Required course/module/lesson not found. Seeder skipped.");
-            return;
+        if (!$course) 
+        {
+            $this->command->warn('No courses found. Please seed courses first.');
+        return;
         }
 
         $test = Test::firstOrCreate([
             'title' => 'Quiz: Intro to Variables',
             'course_id' => $course->id,
-            'module_id' => $module->id,
-            'lesson_id' => $lesson->id,
         ]);
 
         Question::updateOrCreate([

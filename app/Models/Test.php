@@ -6,18 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Test extends Model
 {
-    protected $fillable = ['title', 'course_id', 'module_id', 'lesson_id'];
+    protected $fillable = ['title', 'course_id'];
 
     public function course() {
         return $this->belongsTo(Course::class);
-    }
-
-    public function module() {
-        return $this->belongsTo(Module::class);
-    }
-
-    public function lesson() {
-        return $this->belongsTo(Lesson::class);
     }
 
     public function questions() {

@@ -44,8 +44,10 @@ Route::prefix('v1')->group(function () {
         Route::get('/lessons/{lessonId}/pages', [LessonPageController::class, 'index']);
         Route::get('/lessons/{lessonId}/pages/{pageNumber}', [LessonPageController::class, 'showPage']);
         Route::get('/lessons/{lessonId}/pages/{pageNumber}/next', [LessonPageController::class, 'getNextPage']);
-        Route::get('/tests', [TestController::class, 'index']);
-        Route::get('/tests/{id}', [TestController::class, 'show']);
+        Route::get('courses/{course}/tests', [TestController::class, 'index']);
+        Route::get('courses/{course}/tests/{test}', [TestController::class, 'show']);
+        Route::get('courses/{course}/tests/{test}/questions', [TestController::class, 'getQuestions']);
+
     });
 });
 

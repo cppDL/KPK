@@ -3,23 +3,35 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Course;
 use App\Models\Test;
-use App\Models\Question;
+use Illuminate\Http\Request;
 
 class TestController extends Controller
 {
-    public function index(Request $request)
+    public function index($courseId, Request $request)
     {
-        $perPage = 10;
-        $tests = Test::with(['course', 'module', 'lesson', 'questions'])->paginate($perPage);
+        $course = Course::findOrFail($courseId);
+
+        $perPage = $request->query('per_page', 10);
+
+        $tests = $course->tests()->paginate($perPage);
 
         return response()->json($tests);
     }
 
-    public function show($id)
+    public function show($courseId, $testId)
     {
-        $test = Test::with(['course', 'module', 'lesson', 'questions'])->findOrFail($id);
+        $test = Test::where('course_id', $courseId)->findOrFail($testId);
+
         return response()->json($test);
     }
+
+    public function getQuestions($testId)
+    {
+        $test = Test::with('questions')->findOrFail($testId);
+
+        return response()->json($test->questions);
+    }
+
 }
