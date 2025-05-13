@@ -21,7 +21,23 @@ class CourseSeeder extends Seeder
             'slug' => 'python-basics',
         ], [
             'title' => 'Python Basics',
-            'description' => 'Intro to Python programming',
+            'description' => 'Введение в программирование на Python',
+            'status' => Course::STATUS_AVAILABLE
+
+        ]);
+        Course::firstOrCreate([
+            'slug' => 'matplotlib',
+        ], [
+            'title' => 'matplotlib',
+            'description' => 'Библиотека matplotlib',
+            'status' => Course::STATUS_AVAILABLE
+
+        ]);
+        Course::firstOrCreate([
+            'slug' => 'pandas',
+        ], [
+            'title' => 'pandas',
+            'description' => 'Библиотека pandas',
             'status' => Course::STATUS_AVAILABLE
 
         ]);

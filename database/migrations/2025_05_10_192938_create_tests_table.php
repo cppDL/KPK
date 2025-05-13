@@ -4,34 +4,30 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        Schema::table('tests', function (Blueprint $table) {
-            // Drop module_id or lesson_id if they exist
-            if (Schema::hasColumn('tests', 'module_id')) {
-                $table->dropForeign(['module_id']);
-                $table->dropColumn('module_id');
-            }
+        Schema::create('tests', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('course_id')->constrained()->onDelete('cascade');
+        $table->foreignId('module_id')->constrained()->onDelete('cascade');
+        $table->foreignId('lesson_id')->nullable()->constrained()->onDelete('cascade');
+        $table->string('title');
+        $table->timestamps();
+    });
 
-            if (Schema::hasColumn('tests', 'lesson_id')) {
-                $table->dropForeign(['lesson_id']);
-                $table->dropColumn('lesson_id');
-            }
 
-            // Add course_id instead
-            $table->foreignId('course_id')->after('id')->constrained()->onDelete('cascade');
-        });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::table('tests', function (Blueprint $table) {
-            $table->dropForeign(['course_id']);
-            $table->dropColumn('course_id');
-
-            // Optionally re-add module_id or lesson_id if needed
-            // $table->foreignId('module_id')->constrained()->onDelete('cascade');
-        });
+        Schema::dropIfExists('tests');
     }
 };

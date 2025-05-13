@@ -20,10 +20,18 @@ class LessonPageSeeder extends Seeder
                 'lesson_id' => $lesson->id,
                 'page_number' => 1,
                 'content' => <<<EOT
-            Python is a high-level, interpreted programming language known for its simplicity and readability. 
-            Originally created by Guido van Rossum in the early 1990s, Python is now one of the most widely-used languages in academia, research, and industry.
-            
-            Its clear syntax and strong standard library make it ideal for teaching programming fundamentals and rapid application development.
+            Что такое Python?
+            Python — это высокоуровневый, интерпретируемый язык программирования, созданный Гвидо ван Россумом в начале 1990-х годов.
+
+            Он популярен благодаря:
+            - Простому синтаксису (читается как английский язык)
+            - Большому количеству библиотек
+            - Кроссплатформенности (работает на Windows, macOS, Linux)
+
+            Python широко используется:
+            - в науке (анализ данных, машинное обучение),
+            - в образовании (в том числе для самых начинающих),
+            - в веб-разработке, автоматизации, и многом другом.
             EOT
             ]);
             
@@ -32,15 +40,19 @@ class LessonPageSeeder extends Seeder
                 'lesson_id' => $lesson->id,
                 'page_number' => 2,
                 'content' => <<<EOT
-            Python supports multiple programming paradigms including procedural, object-oriented, and functional programming.
+            Почему Python идеален для преподавателей?
             
-            In academia, Python is often used for:
-            - Data analysis (via pandas, NumPy)
-            - Machine learning (via scikit-learn, TensorFlow)
-            - Simulation and automation
-            - Teaching introductory programming
-            
-            Its versatility makes it a strong choice for professors across disciplines.
+            Профессора и преподаватели часто выбирают Python потому что:
+
+            - Он прост в изучении — минимальный «порог входа»  
+            - Подходит для преподавания базовых алгоритмов  
+            - Имеет мощные библиотеки: NumPy, pandas, matplotlib, scikit-learn  
+            - Легко интегрируется в научные исследования
+
+            Пример:
+            - Экономист может использовать Python для анализа статистики
+            - Биолог — для моделирования данных
+            - Преподаватель может использовать его в учебных курсах
             EOT
             ]);
             
@@ -48,13 +60,19 @@ class LessonPageSeeder extends Seeder
                 'lesson_id' => $lesson->id,
                 'page_number' => 3,
                 'content' => <<<EOT
-            To begin writing Python code, you must install the Python interpreter on your system.
+            Установка Python
             
-            Download the latest version from [https://www.python.org/downloads](https://www.python.org/downloads).
+            Чтобы начать программировать, установите Python с официального сайта:
+
+            https://www.python.org/downloads
+
+            Во время установки убедитесь, что:
+            - Вы поставили галочку «Add Python to PATH»
+            - После установки запустите командную строку и проверьте:
+            python --version
             
-            Make sure to:
-            - Add Python to your system PATH during installation
-            - Verify the install using `python --version` in your terminal or command prompt
+            Если всё в порядке, вы увидите версию, например:
+            Python 3.12.1
             EOT
             ]);
 
@@ -62,15 +80,17 @@ class LessonPageSeeder extends Seeder
                 'lesson_id' => $lesson->id,
                 'page_number' => 4,
                 'content' => <<<EOT
-            Next, install an Integrated Development Environment (IDE). Popular options include:
-            
-            - **VS Code** (recommended): Lightweight, customizable, great extensions for Python.
-            - **PyCharm**: Full-featured, best for larger projects.
-            - **Jupyter Notebook**: Ideal for data analysis and interactive teaching.
-            
-            Install the Python extension in your IDE and test by running a simple script like:
+            Выбор среды разработки (IDE)
+            IDE (интегрированная среда разработки) — это программа, в которой удобно писать код.
+
+            Рекомендуемые IDE:
+            - **VS Code** — лёгкий, настраиваемый, с отличным расширением для Python
+            - **PyCharm** — мощная среда от JetBrains, особенно для крупных проектов
+            - **Jupyter Notebook** — особенно удобен для анализа данных и интерактивных лекций
+
+            Мы начнем с простого примера:
             ```python
-            print("Hello, Python!")
+            print("Привет, Python!")
             EOT
             ]);
         }
