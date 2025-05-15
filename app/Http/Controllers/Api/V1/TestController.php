@@ -34,4 +34,19 @@ class TestController extends Controller
         return response()->json($test->questions);
     }
 
+    public function seedTest(Request $request)
+    {
+        $request->validate([
+            'lesson_id' => 'required|exists:lessons,id',
+            'title' => 'required|string',
+        ]);
+        $test = Test::create([
+            'lesson_id' => $request->lesson_id,
+            'title' => $request->title,
+        ]);
+
+        return response()->json(['message' => 'Test created', 'test' => $test]);
+    }
+    
+
 }

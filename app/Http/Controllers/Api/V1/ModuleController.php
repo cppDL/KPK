@@ -63,4 +63,18 @@ class ModuleController extends Controller
     {
         //
     }
+
+    public function seedModule(Request $request)
+    {
+        $request->validate([
+            'course_id' => 'required|exists:courses,id',
+            'title' => 'required|string',
+        ]);
+        $module = Module::create([
+            'course_id' => $request->course_id,
+            'title' => $request->title,
+        ]);
+
+        return response()->json(['message' => 'Module created', 'module' => $module]);
+    }
 }

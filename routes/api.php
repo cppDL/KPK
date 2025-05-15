@@ -7,6 +7,10 @@ use App\Http\Controllers\Api\V1\LessonPageController;
 use App\Http\Controllers\Api\V1\CourseController;
 use App\Http\Controllers\Api\V1\ModuleController;
 use App\Http\Controllers\Api\V1\TestController;
+use App\Http\Controllers\Api\V1\AdminController;
+use App\Http\Controllers\Api\V1\SeederApiController;
+use Spatie\Permission\Models\Permission;
+
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -37,6 +41,15 @@ Route::prefix('v1')->group(function () {
         Route::get('courses/{course}/tests/{test}/questions', [TestController::class, 'getQuestions']);
 
     });
+});
+
+Route::prefix('v1/admin')->middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::post('users/{user}/assign-role', [AdminController::class, 'assignRole']);
+    Route::post('lesson-pages', [LessonPageController::class, 'store']);
+    Route::post('seed-course', [SeederApiController::class, 'seedCourse']);
+    Route::post('seed-module', [SeederApiController::class, 'seedModule']);
+    Route::post('seed-lesson', [SeederApiController::class, 'seedLesson']);
+    Route::post('seed-test', [SeederApiController::class, 'seedTest']);
 });
 
 Route::post('/generate-user-token', function(Request $request) {

@@ -165,4 +165,16 @@ public function getPreviousLesson($lessonId)
         $lesson = Lesson::findOrFail($lessonId);  // Find the lesson by ID or fail if not found
         return response()->json($lesson);
     }
+
+    public function seedCourse(Request $request)
+    {
+        $request->validate([
+            'slug' => 'required|string',
+            'title' => 'required|string',
+            'description' => 'required|string',
+        ]);
+        $course = Course::create(['title' => $request->title]);
+
+        return response()->json(['message' => 'Course created', 'course' => $course]);
+    }
 }

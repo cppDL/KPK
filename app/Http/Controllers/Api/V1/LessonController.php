@@ -77,4 +77,19 @@ class LessonController extends Controller
     {
         //
     }
+
+    public function seedLesson(Request $request)
+    {
+        $request->validate([
+            'module_id' => 'required|exists:modules,id',
+            'title' => 'required|string',
+        ]);
+        $lesson = Lesson::create([
+            'module_id' => $request->module_id,
+            'title' => $request->title,
+        ]);
+
+        return response()->json(['message' => 'Lesson created', 'lesson' => $lesson]);
+    }
+    
 }

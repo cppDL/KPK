@@ -46,5 +46,31 @@ class LessonPageController extends Controller
 
         return response()->json($nextPage);
     }
+    public function store(Request $request)
+    {
+        $request->validate([
+            'lesson_id' => 'required|exists:lessons,id',
+            'content' => 'required|string',
+            'image' => 'nullable|url',
+        ]);
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('lesson_images', 'public');
+        }
+
+        $pageNumber = LessonPage::where('lesson_id', $request->lesson_id)->max('page_number') + 1;
+
+        $page = LessonPage::create([
+            'lesson_id' => $request->lesson_id,
+            'page_number' => $pageNumber,
+            'content' => $request->content,
+            'image_url' => $request->image_url,
+        ]);
+
+        return response()->json($page, 201);
+    }
+
 
 }
