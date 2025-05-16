@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('questions', function (Blueprint $table) {
@@ -19,14 +16,11 @@ return new class extends Migration
             $table->string('option_b');
             $table->string('option_c');
             $table->string('option_d');
-            $table->string('correct_option'); // e.g. 'a', 'b', 'c', or 'd'
+            $table->string('correct_option');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('questions');

@@ -9,13 +9,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CourseController extends Controller
 {
     
     public function index(Request $request)
     {
-        // Validate query parameters
         $validator = Validator::make($request->all(), [
             'page' => 'integer|min:1',
         ]);
@@ -27,7 +27,6 @@ class CourseController extends Controller
         $page = $request->query('page', 1);
         $perPage = 10;
 
-        // Cache key is unique to the page number
         $cacheKey = "courses_page_{$page}";
 
         $courses = Cache::remember($cacheKey, now()->addMinutes(10), function () use ($perPage) {
@@ -59,21 +58,37 @@ class CourseController extends Controller
         return response()->json($courses);
     }
 
-    /**
-     * Display the specified course.
-     */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $course = Course::findOrFail($id);  // Find the course by ID or fail if not found
-        return response()->json($course);
+        $course = Course::with('modules.lessons')->findOrFail($id);
+
+        $userStatus = null;
+        if ($request->user()) {
+            $pivot = $request->user()
+                            ->completedCourses()
+                            ->where('course_id', $course->id)
+                            ->first()?->pivot;
+
+            if ($pivot) {
+                $userStatus = [
+                    'status'       => $pivot->status,
+                    'completed_at' => $pivot->completed_at,
+                    'expired'      => $pivot->completed_at
+                                    ? now()->diffInDays($pivot->completed_at) > 365
+                                    : false,
+                ];
+            }
+        }
+
+        return response()->json([
+            'course'      => $course,
+            'user_status' => $userStatus,
+        ]);
     }
 
-    /**
-     * Display the modules of a specific course.
-     */
+
     public function getCourseModules(Request $request, $courseId)
     {
-        // Validate query parameters
         $validator = Validator::make($request->all(), [
             'page' => 'integer|min:1',
         ]);
@@ -85,7 +100,6 @@ class CourseController extends Controller
         $page = $request->query('page', 1);
         $perPage = 10;
 
-        // Cache key for the course and page
         $cacheKey = "course_{$courseId}_modules_page_{$page}";
 
         $course = Course::findOrFail($courseId);
@@ -97,21 +111,14 @@ class CourseController extends Controller
         return response()->json($modules);
     }
 
-    /**
-     * Display a specific module by its ID.
-     */
     public function showModule($moduleId)
     {
-        $module = Module::findOrFail($moduleId);  // Find the module by ID or fail if not found
+        $module = Module::findOrFail($moduleId);
         return response()->json($module);
     }
 
-    /**
-     * Display the lessons of a specific module.
-     */
     public function getLessons(Request $request, $moduleId)
     {
-        // Validate query parameters
         $validator = Validator::make($request->all(), [
             'page' => 'integer|min:1',
         ]);
@@ -123,7 +130,6 @@ class CourseController extends Controller
         $page = $request->query('page', 1);
         $perPage = 10;
 
-        // Cache key for the module and page
         $cacheKey = "module_{$moduleId}_lessons_page_{$page}";
 
         $module = Module::findOrFail($moduleId);
@@ -157,12 +163,9 @@ public function getPreviousLesson($lessonId)
         return $prevLesson ?? response()->json(['message' => 'No previous lesson.'], 404);
     }
 
-    /**
-     * Display a specific lesson by its ID.
-     */
     public function showLesson($lessonId)
     {
-        $lesson = Lesson::findOrFail($lessonId);  // Find the lesson by ID or fail if not found
+        $lesson = Lesson::findOrFail($lessonId);
         return response()->json($lesson);
     }
 
@@ -177,4 +180,40 @@ public function getPreviousLesson($lessonId)
 
         return response()->json(['message' => 'Course created', 'course' => $course]);
     }
+
+    public function dropDownCourses()
+    {
+        $courses = Course::select('id', 'title')->get();
+        return response()->json($courses);
+    }
+
+    public function updateStatus(Request $request, Course $course)
+    {
+        $data = $request->validate([
+            'status' => ['required', Rule::in([
+                Course::STATUS_AVAILABLE,
+                Course::STATUS_IN_PROGRESS,
+                Course::STATUS_COMPLETED,
+            ])],
+        ]);
+
+        $user = $request->user();
+
+        $pivotData = ['status' => $data['status']];
+
+        if ($data['status'] === Course::STATUS_COMPLETED) {
+            $pivotData['completed_at'] = now();
+        }
+
+        $user->completedCourses()->syncWithoutDetaching([
+            $course->id => $pivotData
+        ]);
+
+        return response()->json([
+            'course_id'    => $course->id,
+            'status'       => $pivotData['status'],
+            'completed_at' => $pivotData['completed_at'] ?? null,
+        ]);
+    }
+
 }

@@ -15,7 +15,6 @@ return new class extends Migration
             $table->integer('xp_reward')->default(0);
             $table->timestamps();
 
-            // Foreign key constraint
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
         });
     }

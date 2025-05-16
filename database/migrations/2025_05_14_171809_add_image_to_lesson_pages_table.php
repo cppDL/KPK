@@ -6,20 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
     {
         Schema::table('lesson_pages', function (Blueprint $table) {
-            $table->string('image_path')->nullable(); // or 'image_url'
+            $table->string('image_path')->nullable();
         });
     }
 
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('lesson_pages', function (Blueprint $table) {

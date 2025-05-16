@@ -6,20 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('module_id');
             $table->string('title');
-            $table->text('content')->nullable(); // Content of the lesson, optional for flexibility
-            $table->integer('order')->default(0); // Useful for navigation (pagination-like flow)
+            $table->text('content')->nullable(); 
+            $table->integer('order')->default(0); 
             $table->timestamps();
 
-            // Foreign key constraint
             $table->foreign('module_id')
                   ->references('id')
                   ->on('modules')
@@ -27,9 +23,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('lessons');

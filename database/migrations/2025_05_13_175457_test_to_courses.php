@@ -8,7 +8,6 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('tests', function (Blueprint $table) {
-            // Drop module_id or lesson_id if they exist
             if (Schema::hasColumn('tests', 'module_id')) {
                 $table->dropForeign(['module_id']);
                 $table->dropColumn('module_id');
@@ -27,9 +26,6 @@ return new class extends Migration {
         Schema::table('tests', function (Blueprint $table) {
             $table->dropForeign(['course_id']);
             $table->dropColumn('course_id');
-
-            // Optionally re-add module_id or lesson_id if needed
-            // $table->foreignId('module_id')->constrained()->onDelete('cascade');
         });
     }
 };

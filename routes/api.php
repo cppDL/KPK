@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\V1\CourseController;
 use App\Http\Controllers\Api\V1\ModuleController;
 use App\Http\Controllers\Api\V1\TestController;
 use App\Http\Controllers\Api\V1\AdminController;
-use App\Http\Controllers\Api\V1\SeederApiController;
 use Spatie\Permission\Models\Permission;
 
 use App\Models\User;
@@ -39,6 +38,8 @@ Route::prefix('v1')->group(function () {
         Route::get('courses/{course}/tests', [TestController::class, 'index']);
         Route::get('courses/{course}/tests/{test}', [TestController::class, 'show']);
         Route::get('courses/{course}/tests/{test}/questions', [TestController::class, 'getQuestions']);
+        Route::post('courses/{course}/status', [CourseController::class, 'updateStatus']);
+        Route::get('user/completed-courses', [UserController::class, 'completedCoursesSummary']);
 
     });
 });
@@ -50,6 +51,8 @@ Route::prefix('v1/admin')->middleware(['auth:sanctum', 'role:admin'])->group(fun
     Route::post('seed-module', [SeederApiController::class, 'seedModule']);
     Route::post('seed-lesson', [SeederApiController::class, 'seedLesson']);
     Route::post('seed-test', [SeederApiController::class, 'seedTest']);
+    Route::get('courses', [CourseController::class, 'dropDownCourse']);
+    Route::get('users/completed-courses', [UserController::class, 'allUsersCompletedCourses']);
 });
 
 Route::post('/generate-user-token', function(Request $request) {
@@ -80,24 +83,19 @@ Route::post('/generate-user-token', function(Request $request) {
 });
 
 Route::post('/login', function(Request $request) {
-    // Validate the incoming request
     $validated = $request->validate([
         'email' => 'required|email',
         'password' => 'required|string',
     ]);
 
-    // Attempt to find the user by email
     $user = User::where('email', $validated['email'])->first();
 
-    // Check if the user exists and if the password is correct
     if (!$user || !Hash::check($validated['password'], $user->password)) {
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 
-    // Generate a new token
     $token = $user->createToken('user-token', ['view-courses'])->plainTextToken;
 
-    // Return the token and user details
     return response()->json([
         'token' => $token,
         'user' => [

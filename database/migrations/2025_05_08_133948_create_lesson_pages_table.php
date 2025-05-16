@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('lesson_id')->constrained()->onDelete('cascade');
             $table->integer('page_number');
-            $table->text('content'); // Could be text, HTML, Markdown, etc.
+            $table->text('content');
             $table->timestamps();
         });
     }
