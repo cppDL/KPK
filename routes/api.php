@@ -40,7 +40,6 @@ Route::prefix('v1')->group(function () {
         Route::get('courses/{course}/tests/{test}/questions', [TestController::class, 'getQuestions']);
         Route::post('courses/{course}/status', [CourseController::class, 'updateStatus']);
         Route::get('user/completed-courses', [UserController::class, 'completedCoursesSummary']);
-
     });
 });
 
@@ -51,7 +50,6 @@ Route::prefix('v1/admin')->middleware(['auth:sanctum', 'role:admin'])->group(fun
     Route::post('seed-module', [SeederApiController::class, 'seedModule']);
     Route::post('seed-lesson', [SeederApiController::class, 'seedLesson']);
     Route::post('seed-test', [SeederApiController::class, 'seedTest']);
-    Route::get('courses', [CourseController::class, 'dropDownCourse']);
     Route::get('users/completed-courses', [UserController::class, 'allUsersCompletedCourses']);
 });
 

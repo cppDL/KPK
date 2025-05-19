@@ -181,12 +181,6 @@ public function getPreviousLesson($lessonId)
         return response()->json(['message' => 'Course created', 'course' => $course]);
     }
 
-    public function dropDownCourses()
-    {
-        $courses = Course::select('id', 'title')->get();
-        return response()->json($courses);
-    }
-
     public function updateStatus(Request $request, Course $course)
     {
         $data = $request->validate([
