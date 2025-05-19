@@ -184,11 +184,12 @@ public function getPreviousLesson($lessonId)
     public function updateStatus(Request $request, Course $course)
     {
         $data = $request->validate([
-            'status' => ['required', Rule::in([
+            'status'     => ['required', Rule::in([
                 Course::STATUS_AVAILABLE,
                 Course::STATUS_IN_PROGRESS,
                 Course::STATUS_COMPLETED,
             ])],
+            'percentage' => ['nullable','integer','min:0','max:100'],
         ]);
 
         $user = $request->user();
@@ -197,17 +198,22 @@ public function getPreviousLesson($lessonId)
 
         if ($data['status'] === Course::STATUS_COMPLETED) {
             $pivotData['completed_at'] = now();
+            if (isset($data['percentage'])) {
+                $pivotData['percentage'] = $data['percentage'];
+            }
         }
 
-        $user->completedCourses()->syncWithoutDetaching([
-            $course->id => $pivotData
+        $user->courses()->syncWithoutDetaching([
+            $course->id => $pivotData,
         ]);
 
         return response()->json([
             'course_id'    => $course->id,
             'status'       => $pivotData['status'],
             'completed_at' => $pivotData['completed_at'] ?? null,
+            'percentage'   => $pivotData['percentage'] ?? null,
         ]);
     }
+
 
 }

@@ -64,25 +64,74 @@ class UserController extends Controller
         ]);
     }
 
+    // public function allUsersCompletedCourses(Request $request)
+    // {
+    //     $users = User::with(['completedCourses' => function($q){
+    //         $q->select('courses.id','title','course_user.completed_at');
+    //     }])->get();
+
+    //     $payload = $users->map(function($user){
+    //         return [
+    //             'user_id' => $user->id,
+    //             'name'    => $user->name,
+    //             'completed_courses' => $user->completedCourses->map(function($course){
+    //                 $completedAt = $course->pivot->completed_at;
+    //                 return [
+    //                     'course_id'    => $course->id,
+    //                     'title'        => $course->title,
+    //                     'completed_at' => $completedAt,
+    //                     'is_outdated'  => $completedAt 
+    //                                       ? now()->diffInDays($completedAt) > 365 
+    //                                       : false,
+    //                 ];
+    //             }),
+    //         ];
+    //     });
+
+    //     return response()->json($payload);
+    // }
+
     public function allUsersCompletedCourses(Request $request)
     {
-        $users = User::with(['completedCourses' => function($q){
-            $q->select('courses.id','title','course_user.completed_at');
-        }])->get();
+        $users = User::with([
+            'completedCourses.modules' => function($q) {
+                $q->select('modules.id','modules.course_id');
+            },
+            'testAttempts'
+        ])->get();
 
-        $payload = $users->map(function($user){
+        $payload = $users->map(function($user) {
+            $completedCourses = $user->completedCourses;
+
+            $totalCompleted       = $completedCourses->count();
+            $averageCompletion    = $completedCourses->avg(fn($c) => $c->pivot->percentage ?? 0);
+            $daysSinceLastFinish  = $completedCourses->max(fn($c) => now()->diffInDays($c->pivot->completed_at));
+
+            $latestAttempt = $user->testAttempts->first();
+
             return [
-                'user_id' => $user->id,
-                'name'    => $user->name,
-                'completed_courses' => $user->completedCourses->map(function($course){
-                    $completedAt = $course->pivot->completed_at;
+                'user_id'                 => $user->id,
+                'name'                    => $user->name,
+                'last_login_at'           => $user->last_login_at ?? $user->updated_at,
+                'latest_test_score'       => $latestAttempt?->score,
+                'latest_test_date'        => $latestAttempt?->created_at,
+                'total_completed'         => $totalCompleted,
+                'average_completion_pct'  => round($averageCompletion, 2),
+                'days_since_last_finish'  => $daysSinceLastFinish,
+
+                'completed_courses' => $completedCourses->map(function($course) use ($user) {
+                    $pivot   = $course->pivot;
+                    $started = $pivot->created_at;
+                    $ended   = $pivot->completed_at;
+
                     return [
-                        'course_id'    => $course->id,
-                        'title'        => $course->title,
-                        'completed_at' => $completedAt,
-                        'is_outdated'  => $completedAt 
-                                          ? now()->diffInDays($completedAt) > 365 
-                                          : false,
+                        'course_id'          => $course->id,
+                        'title'              => $course->title,
+                        'completed_at'       => $ended,
+                        'percentage'         => $pivot->percentage,
+                        'days_since'         => $ended ? now()->diffInDays($ended) : null,
+                        'time_spent_days'    => $ended ? now()->diffInDays($started, $ended) : null,
+                        'module_count'       => $course->modules->count(),
                     ];
                 }),
             ];

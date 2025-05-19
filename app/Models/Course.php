@@ -37,11 +37,13 @@ class Course extends Model
     {
         return $this->hasMany(Test::class);
     }
+
     public function users()
     {
-        return $this->belongsToMany(User::class, 'course_user')
-                    ->withPivot(['status','completed_at'])
+        return $this->belongsToMany(User::class)
+                    ->withPivot('status','completed_at','percentage')
                     ->withTimestamps();
     }
+
 
 }
